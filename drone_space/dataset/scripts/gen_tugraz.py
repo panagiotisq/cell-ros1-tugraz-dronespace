@@ -8,6 +8,8 @@ Per sequence, at 10 Hz cadence (one frame per 100 ms) aligned to the GT mocap po
         ch0=ON ch1=OFF, half-res (coords//2), value exp(-age/TAU), latest event per pixel.
   - local_maps/point_cloud_XXXXX.h5 : PC [4,M] float16, corrected map in the GT CAMERA frame
         (T_cam_world @ pc_world), kept to z in (0.1, DEPTH_KEEP].
+  - <seq>_pose_gt.h5 : dataset 'Ln_T_L0' [N,4,4] float64 = world->cam per kept frame
+        (= inv(T_world_cam)); this is the GT pose file the CELL dataloader reads.
   - meta.npz : per-kept-frame ts, T_world_cam, bridged flag, + calib/params.
 
 Frames with < MIN_EVENTS (static lead-in/out) are dropped; kept frames are renumbered
@@ -141,6 +143,11 @@ def process(seq, max_ticks=None):
 
     np.savez(out / "meta.npz", ts=np.array(kept_ts), T_world_cam=np.array(kept_Twc, np.float32),
              bridged=np.array(kept_br), window=WIN, tau=TAU, cadence=CADENCE, calib=CALIB, half=True)
+    # GT pose file the CELL dataloader (core/datasets_m3ed.py) reads: world->cam per kept
+    # frame = inv(T_world_cam), stored as the single dataset 'Ln_T_L0' [N,4,4]. A sequence
+    # without this file is silently skipped by the loader, so it must be written here.
+    with h5py.File(out / f"{seq}_pose_gt.h5", "w") as hf:
+        hf.create_dataset("Ln_T_L0", data=np.linalg.inv(np.asarray(kept_Twc, dtype=np.float64)))
     print(f"[{seq}] DONE -> {out}  kept {j}, dropped {skipped}  ({time.time()-te:.0f}s)", flush=True)
 
 
