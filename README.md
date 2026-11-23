@@ -1,14 +1,13 @@
-# cell_dronespace_ros1
+# cell-ros1-tugraz-dronespace
 
-Live CELL (map-relative event-camera localization) deployment on the TU Graz drone-space
-rig: ROS 1 Noetic, EVK4 event camera, OptiTrack mocap. Originally scaffolded as a ROS 2
-package; that approach was abandoned in favor of the ROS 1 live deployment actually built
-and validated on-site, in `cell_live_ros1/`.
+Live **CELL** (map-relative event-camera localization) on a drone-space rig — ROS 1 Noetic,
+Prophesee EVK4 event camera, OptiTrack mocap — together with the TUGraz drone-space dataset
+and its generation tooling. The live deployment lives in `cell_live_ros1/`.
 
 ## Layout
 
 ```
-cell_dronespace_ros1/
+cell-ros1-tugraz-dronespace/
 ├── drone_space/        Calibration, mocap<->map alignment, the aligned room map, the
 │   │                   calibration reference (CALIBRATION.md), and:
 │   └── dataset/        The dataset-generation pipeline (bag -> CELL-format training

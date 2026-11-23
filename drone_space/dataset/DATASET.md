@@ -51,9 +51,9 @@ data/<seq>/
 - **Local map**: the aligned room point cloud transformed into that frame's GT camera frame
   (`T_cam_world @ pc_world`), kept to `z ∈ (0.1, 12] m`.
 - **Pose GT** (`Ln_T_L0`): world→cam at each kept frame, `T_world_cam = T_world_body · T_body_cam`.
-- **Geometry** (register in `core/scene_config.py`, `_INDOOR` class): native frame 360×640,
-  crop `(288,512,36,64)`, `calib_div = 2.0`, `max_depth = 10.0`. Pass the event dir
-  explicitly as `--ev_input ours_50ms_half` (it is not the indoor default in `scene_ev_input`).
+- **Geometry** (see `scripts/scene_config_tugraz.md`): registered in `core/scene_config.py`
+  `_INDOOR` class — native frame 360×640, crop `(288,512,36,64)`, `calib_div = 2.0`,
+  `max_depth = 10.0`, with `scene_ev_input` returning `ours_50ms_half`.
 
 ---
 

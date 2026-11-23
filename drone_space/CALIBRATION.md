@@ -17,13 +17,11 @@ Files in `calib/`:
 - **This is the EVENT camera**, not the phone used for the room reconstruction. The ~1536 px focal
   COLMAP estimates for the phone video is a *different camera* and is irrelevant to CELL — the phone
   only builds the map geometry; depth is rendered and matched against events using **these** intrinsics.
-- Mild distortion (notably k2≈0.33). Decide later whether to undistort event frames or carry the
-  coefficients into the pipeline — flagged for the sequence-generation step.
 
 ## Extrinsic `T_body_camera`
 4×4, metres, row-major. Rotation ≈ **3° about X**; translation ≈ **[−2.1, −2.1, 0.7] cm**.
 
-**Convention (CONFIRMED by the owner): camera→body.** `T_body_camera` maps a point/pose from the
+**Convention: camera→body.** `T_body_camera` maps a point/pose from the
 **camera** frame into the **body** (mocap rigidbody) frame — i.e. it is the camera's pose expressed in
 the body frame. The camera's world pose per timestamp is therefore:
 
@@ -31,11 +29,9 @@ the body frame. The camera's world pose per timestamp is therefore:
 T_world_camera = T_world_body (from mocap) · T_body_camera
 ```
 
-## Resolved
-- **Time sync** — confirmed from an existing test bag recorded on the drone-space rig
-  (`2026-11-10-15-10-48.bag`): events and mocap poses share **one ROS time base**
-  (`header.stamp`, seconds) — ranges overlap correctly (pose 1794319848.47–853.38s, events
-  1794319849.81–853.01s, fully inside the pose range). No separate clock/offset to correct for.
-- **Event topic + message type** — confirmed from the same bag + `prophesee_ros_wrapper` source:
-  - Events: `/prophesee/camera/cd_events_buffer`, type `prophesee_event_msgs/EventArray`
-  - Mocap pose: `/mocap_node/evk4/pose`, type `geometry_msgs/PoseStamped` (rigidbody ID 33, `evk4.yaml`)
+## Time sync & topics
+- **Time sync** — events and mocap poses share **one ROS time base** (`header.stamp`, seconds);
+  no separate clock or offset to correct for.
+- **Topics** — events on `/prophesee/camera/cd_events_buffer`
+  (`prophesee_event_msgs/EventArray`); mocap pose on `/mocap_node/evk4/pose`
+  (`geometry_msgs/PoseStamped`).
