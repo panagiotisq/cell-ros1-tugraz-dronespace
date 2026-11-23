@@ -4,6 +4,24 @@ Live **CELL** (map-relative event-camera localization) on a drone-space rig — 
 Prophesee EVK4 event camera, OptiTrack mocap — together with the TUGraz drone-space dataset
 and its generation tooling. The live deployment lives in `cell_live_ros1/`.
 
+## Data & trained model (Google Drive)
+
+Want the drone-space data or the trained CELL model? The large files aren't in the repo —
+they're all in one Google Drive folder:
+
+### 📂 https://drive.google.com/drive/folders/1GzT_O74EwicPITg9dRQWXtwPS9glM1O0?usp=sharing
+
+| folder | what it holds |
+|---|---|
+| `cell_checkpoint/` | the **trained CELL checkpoint** (`best_model.pth`) — for eval and live deployment |
+| `bags/` | the 4 trimmed event + mocap rosbags — the raw dataset input (~27 GB) |
+| `map/` | the aligned room point cloud (`fused_clean_mocap.ply`, ~60 MB) + calibration |
+| `poses/` | the fixed ground-truth pose tracks (also committed in this repo) |
+| `SHA256SUMS.txt` | checksums — verify a download with `sha256sum -c SHA256SUMS.txt` |
+
+Where each file goes: `drone_space/DATASET.md` (dataset) and `cell_live_ros1/README.md`
+(deployment).
+
 ## Layout
 
 ```

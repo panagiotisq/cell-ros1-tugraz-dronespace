@@ -7,8 +7,9 @@ used for training, 2 for evaluation: train = `tugraz_seq1`, `tugraz_seq2`; eval 
 treats `tugraz_seq3` as the held-out validation sequence — the training recipe trains on
 seq1/seq2 and tests on seq3.)
 
-The large inputs (bags, aligned room map) live in external storage (see **Data hosting**
-below); this repository holds only the **scripts** that turn those inputs into the
+The large inputs (bags, aligned room map) live on **Google Drive** —
+<https://drive.google.com/drive/folders/1GzT_O74EwicPITg9dRQWXtwPS9glM1O0?usp=sharing>
+(full contents in **Data hosting** below); this repository holds only the **scripts** that turn those inputs into the
 CELL-format sequences, plus the **fixed ground-truth pose tracks** (`poses/`, shipped as
 files — see step 2).
 
