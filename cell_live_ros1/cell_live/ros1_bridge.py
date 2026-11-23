@@ -182,7 +182,7 @@ class EventForwarder:
       numpy.frombuffer() call per message -- no per-event python object construction at
       all. Benchmarked at ~128M events/s vs rospy's ~0.28M events/s (~450x). Byte-for-byte
       validated against rospy's own EventArray.deserialize() on live data before being
-      wired in here (seen scratchpad/validate_raw_decode.py): 60/60 messages matched
+      wired in here (see tools/validate_raw_decode.py): 60/60 messages matched
       exactly, including bursty ones up to 640 events.
 
       Wire format (ROS1 classic serialization, little-endian, unpadded), from
