@@ -103,12 +103,56 @@ python scripts/gen_tugraz.py --seqs seq1 seq2 seq3 seq4
 
 ---
 
-## Reproduce from hosted inputs
+## Reproduce: generate → train → eval
 
-With the hosted `bags/`, this repo's `poses/`, and the hosted `map/` in place (and the paths
-at the top of `gen_tugraz.py` pointed at them), step 4 alone regenerates every
-`event_frames_*` and `local_maps/` directory deterministically. Steps 1–3 do **not** need to
-be rerun — their outputs (trimmed bags, fixed poses, aligned map) are the shipped inputs.
+Full chain from a fresh clone. Steps 1–3 of the pipeline do **not** need rerunning — the
+trimmed bags, fixed poses and aligned map are the shipped inputs; only **step 4 (generation)**
+runs, then training/eval use the vendored CELL bundle. Set up its conda env + compiled CUDA
+extensions first (see `cell_live_ros1/README.md`). Use **absolute** paths below:
+`<DATA_ROOT>` = an ext4 output dir, `<BAGS>`/`<MAP>` = the downloaded `bags/`/`map/`,
+`<CKPT>` = the downloaded `cell_checkpoint/best_model.pth`.
+
+**1. Generate the four sequences** (bag stem `seqN` → scene dir `tugraz_seqN`):
+```bash
+python drone_space/dataset/scripts/gen_tugraz.py \
+    --seqs seq1 seq2 seq3 seq4 \
+    --bagdir <BAGS> --ply <MAP>/fused_clean_mocap.ply --data-root <DATA_ROOT>
+# posedir/ext default to this repo's drone_space/dataset/poses + drone_space/calib.
+# -> <DATA_ROOT>/tugraz_seq{1..4}/ with event_frames, local_maps, meta.npz, *_pose_gt.h5
+```
+
+Training and eval run from the bundle's `code/` directory (its imports are relative to it):
+```bash
+cd cell_live_ros1/cell_dronespace_bundle/code
+```
+
+**2. Train** — the exact recipe that produced the shipped checkpoint (100 epochs from scratch,
+decoupled-β1.5 pose-supervised confidence, partial-light depth completion, half-magnitude
+training perturbation):
+```bash
+python main.py \
+    --data_path <DATA_ROOT> --dataset m3ed \
+    --train_sequence tugraz_seq1,tugraz_seq2 --test_sequence tugraz_seq3 \
+    --ev_input ours_50ms_half --backbone edge \
+    --partial_depth partial_light --conf_head \
+    --pose_e2e --pose_e2e_decouple --pose_e2e_beta_pred 1.5 \
+    --max_t 0.25 --max_r 2.5 --epochs 100 \
+    --run_tag scratch100_decplB15_partial_light_halfpert
+```
+
+**3. Evaluate** (perturbed-pose refinement; the per-frame perturbation CSV is auto-generated
+reproducibly from `--rt_seed` if absent). `--partial_depth` must match training; `--ev_input`
+is resolved from `scene_config` (= `ours_50ms_half`) so it can be omitted:
+```bash
+python eval_full.py --ckpt <CKPT> --tag tugraz_eval --seq tugraz_seq3 \
+    --partial_depth partial_light --max_r 5 --max_t 0.5
+```
+
+**4. (Optional) sequential tracking demo:**
+```bash
+python tools/tracking/track_cell.py --seq tugraz_seq3 --ckpt <CKPT> \
+    --selection floor0 --motion position --reset_cm 50
+```
 
 ## Data hosting
 

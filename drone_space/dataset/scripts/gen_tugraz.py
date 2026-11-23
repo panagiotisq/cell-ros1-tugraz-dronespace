@@ -32,6 +32,7 @@ POSEDIR = BAGDIR / "poses_fixed"
 PLY = None
 EXT = None
 DATA_ROOT = Path("/path/to/output")
+SCENE_PREFIX = "tugraz_"      # output scene name = SCENE_PREFIX + input bag stem (seq1 -> tugraz_seq1)
 REP_DIR = "event_frames_ours_50ms_half"
 CALIB = [1687.4514251875887, 1687.4514251875887, 653.35913097450623, 351.42057452312019]
 
@@ -78,6 +79,8 @@ def build_frame(x, y, t, p, t_end):
 
 
 def process(seq, max_ticks=None):
+    scene = f"{SCENE_PREFIX}{seq}"            # input files use the bag stem `seq`; the generated
+                                             # sequence dir uses the CELL scene name (tugraz_seqN)
     bag = BAGDIR / f"{seq}_trim.bag"
     npz = np.load(POSEDIR / f"{seq}_trim_poses_fixed.npz")
     pts, pos, quat, bridged = npz["ts"], npz["pos"], npz["quat"], npz["bridged"]
@@ -90,7 +93,7 @@ def process(seq, max_ticks=None):
     pidx = np.clip(np.searchsorted(pts, ticks), 0, len(pts) - 1)
     frame_ts = pts[pidx]; nf = len(frame_ts)
 
-    out = DATA_ROOT / seq
+    out = DATA_ROOT / scene
     (out / REP_DIR / "left").mkdir(parents=True, exist_ok=True)
     (out / "local_maps").mkdir(parents=True, exist_ok=True)
     print(f"[{seq}] {nf} frames; streaming events ...", flush=True)
@@ -146,9 +149,9 @@ def process(seq, max_ticks=None):
     # GT pose file the CELL dataloader (core/datasets_m3ed.py) reads: world->cam per kept
     # frame = inv(T_world_cam), stored as the single dataset 'Ln_T_L0' [N,4,4]. A sequence
     # without this file is silently skipped by the loader, so it must be written here.
-    with h5py.File(out / f"{seq}_pose_gt.h5", "w") as hf:
+    with h5py.File(out / f"{scene}_pose_gt.h5", "w") as hf:
         hf.create_dataset("Ln_T_L0", data=np.linalg.inv(np.asarray(kept_Twc, dtype=np.float64)))
-    print(f"[{seq}] DONE -> {out}  kept {j}, dropped {skipped}  ({time.time()-te:.0f}s)", flush=True)
+    print(f"[{scene}] DONE -> {out}  kept {j}, dropped {skipped}  ({time.time()-te:.0f}s)", flush=True)
 
 
 if __name__ == "__main__":
@@ -169,6 +172,10 @@ if __name__ == "__main__":
     ap.add_argument("--data-root", type=Path, default=DATA_ROOT,
                     help="output dir for generated sequences (an ext4 path -- the format's "
                          "f16/scatter writes are slow over NTFS/exFAT)")
+    ap.add_argument("--scene-prefix", default=SCENE_PREFIX,
+                    help="prefix for the output scene dir name (default 'tugraz_': bag stem "
+                         "seq1 -> sequence tugraz_seq1, matching core/scene_config.py). Set to "
+                         "'' if your bag stems already carry the scene name.")
     a = ap.parse_args()
 
     _dataset_dir = Path(__file__).resolve().parent.parent      # drone_space/dataset/
@@ -178,6 +185,7 @@ if __name__ == "__main__":
     PLY = a.ply or str(_drone_space / "map" / "fused_clean_mocap.ply")
     EXT = a.ext or str(_drone_space / "calib" / "T_body_camera.txt")
     DATA_ROOT = a.data_root
+    SCENE_PREFIX = a.scene_prefix
 
     for s in a.seqs:
         process(s, a.max_ticks)
