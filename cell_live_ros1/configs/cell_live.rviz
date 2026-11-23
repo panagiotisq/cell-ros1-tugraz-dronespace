@@ -1,0 +1,64 @@
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+  - Class: rviz/Views
+    Name: Views
+Visualization Manager:
+  Global Options:
+    Fixed Frame: dronespace_world
+    Background Color: 20; 20; 20
+  Displays:
+    - Class: rviz/TF
+      Name: TF
+      Enabled: true
+    - Class: rviz/PointCloud2
+      Name: "Room map (fused_clean_mocap.ply)"
+      Topic: /cell/map
+      Style: Points
+      Size (Pixels): 2
+      Color Transformer: RGB8
+      Enabled: true
+    - Class: rviz/MarkerArray
+      Name: "CELL pose (green=valid, orange=held)"
+      Marker Topic: /cell/debug/markers
+      Enabled: true
+    - Class: rviz/MarkerArray
+      Name: "Mocap guess (blue)"
+      Marker Topic: /cell/guess/markers
+      Enabled: true
+    - Class: rviz/Path
+      Name: "CELL trajectory"
+      Topic: /cell/path
+      Color: 25; 230; 50
+      Enabled: true
+    - Class: rviz/Path
+      Name: "Mocap guess trajectory"
+      Topic: /cell/guess/path
+      Color: 50; 130; 255
+      Enabled: true
+    - Class: rviz/Image
+      Name: "Event frame (live, fast)"
+      Image Topic: /cell/debug/event_frame_live
+      Enabled: true
+    - Class: rviz/Image
+      Name: "Event frame (last result, with status overlay)"
+      Image Topic: /cell/debug/event_frame_vis
+      Enabled: false
+  Value: true
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+      Distance: 10
+      Pitch: 0.6
+      Yaw: 3.9415927
+Window Geometry:
+  Height: 900
+  Width: 1400
+  Displays:
+    collapsed: false
+  Image:
+    collapsed: false

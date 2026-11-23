@@ -1,0 +1,22 @@
+<launch>
+  <!-- Same node as the external driver stack's prophesee_gs_bright_publisher.launch, not modified; this is
+       our own copy, with event_delta_t raised from the original 0.0001s (100us) to 0.010s
+       (10ms). The original setting publishes 1300 to 1850 ROS messages per second regardless
+       of actual motion; ROS's own python deserialization of each message (not our code,
+       which runs after) tops out around 0.28M events/s (see
+       drone_space/EVENT_REPRESENTATION.md), so that many small messages causes a growing,
+       multi-second backlog in cell_live_ros1's event forwarder during real motion, confirmed
+       on site (event timestamps stuck 2.5 to 3s behind wall clock). Same total events per
+       second, about 100 to 150 times fewer messages, so about 100 to 150 times less
+       per-message ROS overhead for the same data. -->
+  <!-- override on the command line if your camera needs a different bias profile:
+       roslaunch prophesee_for_cell_live.launch bias_file:=/path/to/your.bias -->
+  <arg name="bias_file" default="$(dirname)/../configs/gs_bright.bias" />
+  <node pkg="prophesee_ros_driver" type="prophesee_ros_publisher" name="prophesee_ros_publisher" respawn="false" output="screen">
+    <param name="camera_name" value="camera" />
+    <param name="publish_cd" value="true" />
+    <param name="bias_file" value="$(arg bias_file)"/>
+    <param name="raw_file_to_read" value="" />
+    <param name="event_delta_t" value="0.010" />
+  </node>
+</launch>
