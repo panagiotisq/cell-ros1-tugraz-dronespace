@@ -3,8 +3,7 @@
        our own copy, with event_delta_t raised from the original 0.0001s (100us) to 0.010s
        (10ms). The original setting publishes 1300 to 1850 ROS messages per second regardless
        of actual motion; ROS's own python deserialization of each message (not our code,
-       which runs after) tops out around 0.28M events/s (see
-       drone_space/EVENT_REPRESENTATION.md), so that many small messages causes a growing,
+       which runs after) tops out around 0.28M events/s, so that many small messages causes a growing,
        multi-second backlog in cell_live_ros1's event forwarder during real motion, confirmed
        on site (event timestamps stuck 2.5 to 3s behind wall clock). Same total events per
        second, about 100 to 150 times fewer messages, so about 100 to 150 times less

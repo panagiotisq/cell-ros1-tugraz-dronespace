@@ -54,7 +54,7 @@ up with no code changes, just the two `--*-topic` flags above if your topic name
 
 Everything else under `drone_space/` (intrinsics, extrinsic, the aligned map, the sim3
 alignment) is **this specific room's** calibration/reconstruction data — a new space needs
-its own pass through `drone_space/ON_SITE_CHECKLIST.md` and `CALIBRATION.md`, not a copy of
+its own calibration/reconstruction pass (see `drone_space/CALIBRATION.md`), not a copy of
 these files.
 
 ## Status
@@ -136,8 +136,7 @@ Logs: `run/logs/*.log`.
 ## Event decoding: raw vs rospy
 
 rospy's python deserialization of `prophesee_event_msgs/EventArray` (one Python object
-built per event) has a hard throughput ceiling (~0.28M events/s, see
-`drone_space/EVENT_REPRESENTATION.md`) -- below what this EVK4 produces during vigorous
+built per event) has a hard throughput ceiling (~0.28M events/s) -- below what this EVK4 produces during vigorous
 motion, which otherwise leaves the event data several seconds stale by the time a tick
 uses it (CELL ends up matching "where the camera is right now" against "what the camera
 saw seconds ago"). `EventForwarder` (`cell_live/ros1_bridge.py`) avoids this with

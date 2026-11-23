@@ -172,7 +172,7 @@ class EventForwarder:
     "rospy" (the original, proven method): rospy deserializes each EventArray message into
       real Event objects; we iterate msg.events in a plain python loop. Confirmed correct,
       but capped at ROS's python deserialization throughput for this message type (~0.28M
-      events/s measured, see drone_space/EVENT_REPRESENTATION.md) -- well below what this
+      events/s measured) -- well below what this
       EVK4 can produce during vigorous motion, so a multi-second backlog can build up
       (confirmed on-site: event timestamps lagging wall-clock by 3+ seconds during fast
       rig motion, the dominant source of bad corrections, NOT model compute time).

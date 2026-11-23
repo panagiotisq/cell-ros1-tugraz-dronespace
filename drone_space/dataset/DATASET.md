@@ -12,6 +12,26 @@ below); this repository holds only the **scripts** that turn those inputs into t
 CELL-format sequences, plus the **fixed ground-truth pose tracks** (`poses/`, shipped as
 files — see step 2).
 
+## Capture methodology (how the raw inputs were produced)
+
+The raw data was captured on the drone-space rig and reconstructed off-line:
+
+- **Recording.** Each flight was flown in a motion-capture room and recorded as one ROS 1
+  rosbag holding the event stream (`prophesee_event_msgs/EventArray`) and the mocap rigidbody
+  pose (`geometry_msgs/PoseStamped`), both stamped on a **single ROS clock** (no inter-stream
+  offset). The four flights use distinct trajectories/coverage; the two eval sequences are
+  deliberately different from the two training ones.
+- **Room map.** With no depth sensor available, the room was reconstructed as a dense point
+  cloud with **COLMAP** (dense MVS) from a hand-held phone video shot for wide coverage and
+  high overlap. This cloud is the prior map depth is rendered from (the LiDAR-map analogue).
+- **Metric alignment.** The cloud was cleaned (`scripts/outlier_tuner.py`) and fit into the
+  **mocap world frame** with a 7-DOF Umeyama similarity over **≥4–6 control points** measured
+  in mocap-world coordinates at varied, non-coplanar heights (so scale and vertical rotation
+  are well constrained). The event-camera intrinsics and the rigidbody→camera extrinsic live
+  in `../calib/` (documented in `../CALIBRATION.md`).
+
+The processing from these raw inputs to CELL-format sequences is the pipeline below.
+
 ---
 
 ## What a finished sequence looks like

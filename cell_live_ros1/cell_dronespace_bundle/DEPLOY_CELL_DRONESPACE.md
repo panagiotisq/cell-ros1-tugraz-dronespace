@@ -103,8 +103,7 @@ Runtime note (seen on the lab PC): always launch with
 
 ## 4. THE EVENT REPRESENTATION (authoritative — matches the trained model)
 
-A stub `event_representation.py` elsewhere builds a 2-ch STC/Trail surface, and the room's
-`EVENT_REPRESENTATION.md` specifies a **1-channel** exp-decay surface. **Both are wrong for
+A stub `event_representation.py` elsewhere builds a 2-ch STC/Trail surface — **wrong for
 this checkpoint.** `code/tools/m3ed/event2frame.py` (the unrelated M3ED pipeline's own
 frame generator, if you encounter it elsewhere in this codebase) uses **linear**
 normalization (age / window) — also not what this checkpoint was trained on; don't confuse
