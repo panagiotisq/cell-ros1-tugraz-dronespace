@@ -5,7 +5,7 @@
   mode="exp"    value = exp(-age / tau), tau = 0.015s  (DEFAULT -- matches best_model.pth,
                 verified empirically against the real training frames: min nonzero value
                 0.03568 = exp(-0.050/0.015) exactly, a hard floor -- see
-                drone_space/dataset/scripts/gen_tugraz.py, the real training-data generator)
+                drone_space/scripts/gen_tugraz.py, the real training-data generator)
   mode="linear" value = age / window, clipped to [0, 1]  (does NOT match best_model.pth;
                 kept only so this stays usable for a future model trained that way)
 No STC/Trail denoising (train/test match).

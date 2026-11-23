@@ -74,10 +74,10 @@ Validated live on an EVK4 + OptiTrack rig (not only bag replay).
 
 **Download the large files first** (excluded from git, hosted on Google Drive --
 <https://drive.google.com/drive/folders/1GzT_O74EwicPITg9dRQWXtwPS9glM1O0?usp=sharing>, see
-`drone_space/dataset/DATASET.md`):
+`drone_space/DATASET.md`):
 - `cell_dronespace_bundle/checkpoint/best_model.pth` (107MB) -- on Drive under `cell_checkpoint/`
 - `../drone_space/map/fused_clean_mocap.ply` (60MB -- the same aligned room reconstruction
-  used by `drone_space/dataset/`'s local-map generation, one upload covers both) -- Drive `map/`
+  used by `drone_space/`'s local-map generation, one upload covers both) -- Drive `map/`
 
 Each file's SHA-256 is in `SHA256SUMS.txt` at the Drive folder root (`sha256sum -c SHA256SUMS.txt`).
 
@@ -132,11 +132,11 @@ launch/start_bridge.sh --event-decode rospy      # or: export CLR1_EVENT_DECODE=
 
 Verified empirically on the real training frames (`event_frame_XXXXX.npy`): the minimum
 nonzero pixel value is `0.03568 = exp(-0.050/0.015)` exactly, a hard floor -- an
-**exponential decay** (`drone_space/dataset/scripts/gen_tugraz.py`, `TAU=0.015s`), not a
+**exponential decay** (`drone_space/scripts/gen_tugraz.py`, `TAU=0.015s`), not a
 linear ramp. (The M3ED pipeline's own `event2frame.py`, if you go looking for a reference
 implementation elsewhere in the CELL codebase, uses linear normalization instead -- that's
 a different pipeline and was never used to generate these training sequences; don't
-confuse the two.) See `drone_space/dataset/DATASET.md` for the generator and
+confuse the two.) See `drone_space/DATASET.md` for the generator and
 `DEPLOY_CELL_DRONESPACE.md` sec 4 for the full spec.
 
 `event_repr.build_frame()` takes `mode="exp"|"linear"` (default `"exp"`, matching

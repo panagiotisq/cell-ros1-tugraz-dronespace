@@ -26,7 +26,7 @@ from pathlib import Path
 # Placeholders, overridden by the CLI flags added at the bottom of this file
 # (--bagdir/--posedir/--ply/--ext/--data-root). PLY/EXT fall back to this repo's own
 # drone_space/map, drone_space/calib when not given explicitly (see __main__ below) --
-# see drone_space/dataset/DATASET.md for where the hosted bags/poses/map actually live.
+# see drone_space/DATASET.md for where the hosted bags/poses/map actually live.
 BAGDIR = Path("/path/to/bags")
 POSEDIR = BAGDIR / "poses_fixed"
 PLY = None
@@ -161,7 +161,7 @@ if __name__ == "__main__":
     ap.add_argument("--bagdir", type=Path, default=BAGDIR,
                     help="dir holding <seq>_trim.bag (the hosted bags/ folder, see DATASET.md)")
     ap.add_argument("--posedir", type=Path, default=None,
-                    help="dir holding <seq>_trim_poses_fixed.npz (default: drone_space/dataset/poses/, "
+                    help="dir holding <seq>_trim_poses_fixed.npz (default: drone_space/poses/, "
                          "resolved relative to this script)")
     ap.add_argument("--ply", default=None,
                     help="aligned room cloud path (default: drone_space/map/fused_clean_mocap.ply, "
@@ -178,10 +178,9 @@ if __name__ == "__main__":
                          "'' if your bag stems already carry the scene name.")
     a = ap.parse_args()
 
-    _dataset_dir = Path(__file__).resolve().parent.parent      # drone_space/dataset/
-    _drone_space = _dataset_dir.parent                         # drone_space/
+    _drone_space = Path(__file__).resolve().parent.parent      # drone_space/ (scripts/ is one level down)
     BAGDIR = a.bagdir
-    POSEDIR = a.posedir or (_dataset_dir / "poses")
+    POSEDIR = a.posedir or (_drone_space / "poses")
     PLY = a.ply or str(_drone_space / "map" / "fused_clean_mocap.ply")
     EXT = a.ext or str(_drone_space / "calib" / "T_body_camera.txt")
     DATA_ROOT = a.data_root

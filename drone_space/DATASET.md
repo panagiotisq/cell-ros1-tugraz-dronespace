@@ -28,7 +28,7 @@ The raw data was captured on the drone-space rig and reconstructed off-line:
   **mocap world frame** with a 7-DOF Umeyama similarity over **≥4–6 control points** measured
   in mocap-world coordinates at varied, non-coplanar heights (so scale and vertical rotation
   are well constrained). The event-camera intrinsics and the rigidbody→camera extrinsic live
-  in `../calib/` (documented in `../CALIBRATION.md`).
+  in `calib/` (documented in `CALIBRATION.md`).
 
 The processing from these raw inputs to CELL-format sequences is the pipeline below.
 
@@ -114,10 +114,10 @@ extensions first (see `cell_live_ros1/README.md`). Use **absolute** paths below:
 
 **1. Generate the four sequences** (bag stem `seqN` → scene dir `tugraz_seqN`):
 ```bash
-python drone_space/dataset/scripts/gen_tugraz.py \
+python drone_space/scripts/gen_tugraz.py \
     --seqs seq1 seq2 seq3 seq4 \
     --bagdir <BAGS> --ply <MAP>/fused_clean_mocap.ply --data-root <DATA_ROOT>
-# posedir/ext default to this repo's drone_space/dataset/poses + drone_space/calib.
+# posedir/ext default to this repo's drone_space/poses + drone_space/calib.
 # -> <DATA_ROOT>/tugraz_seq{1..4}/ with event_frames, local_maps, meta.npz, *_pose_gt.h5
 ```
 

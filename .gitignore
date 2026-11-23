@@ -8,15 +8,14 @@ __pycache__/
 *.pyc
 
 # large binaries hosted externally (Google Drive) -- never commit these, see
-# cell_live_ros1/README.md's "Environment setup" and drone_space/dataset/DATASET.md's
+# cell_live_ros1/README.md's "Environment setup" and drone_space/DATASET.md's
 # "Data hosting" for the links + where to place the downloaded file
 cell_live_ros1/cell_dronespace_bundle/checkpoint/*.pth
 drone_space/map/*.ply
 
 # dataset: large raw inputs and regenerated outputs -- never committed, see DATASET.md
-drone_space/dataset/bags/
-drone_space/dataset/data/
-drone_space/dataset/map/
+drone_space/bags/
+drone_space/data/
 
 # live deployment runtime artifacts
 cell_live_ros1/run/*.pid

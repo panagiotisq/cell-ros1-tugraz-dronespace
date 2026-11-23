@@ -5,7 +5,7 @@ import open3d.visualization.gui as gui
 import open3d.visualization.rendering as rendering
 
 # Placeholder, overridden by --ply (e.g. the raw COLMAP dense reconstruction before
-# alignment -- see drone_space/dataset/DATASET.md step 3).
+# alignment -- see drone_space/DATASET.md step 3).
 PLY = "/path/to/colmap/dense/fused.ply"
 
 class Tuner:
