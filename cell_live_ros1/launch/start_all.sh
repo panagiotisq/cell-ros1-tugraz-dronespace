@@ -39,7 +39,9 @@ fi
 
 echo "starting (master 127.0.0.1:$CLR1_MASTER_PORT)"
 start bridge launch/start_bridge.sh
-wait_for 15 "bridge" clr1_port_busy "$CLR1_GUESS_PORT"
+wait_for 15 "bridge" clr1_port_busy "$CLR1_RESULT_PORT"   # the bridge only LISTENS on RESULT_PORT; it
+                                                          # connects OUT to the CELL process for guess/events,
+                                                          # so GUESS/EVENTS ports bind only once start_cell.sh runs below
 start rviz launch/start_rviz.sh
 start cell launch/start_cell.sh "${CELL_ARGS[@]}"
 wait_for 120 "CELL (model load + extensions + first tick)" grep -q -E "waiting for the bridge|Error|Traceback" "$LOGS/cell.log"
