@@ -4,6 +4,11 @@ Live **CELL** (map-relative event-camera localization) on a drone-space rig — 
 Prophesee EVK4 event camera, OptiTrack mocap — together with the TUGraz drone-space dataset
 and its generation tooling. The live deployment lives in `cell_live_ros1/`.
 
+**CELL** is the method from the paper *[Learning Which Correspondences to Trust: Confidence-Weighted
+Event-Camera Localization in LiDAR Maps](https://arxiv.org/abs/2610.11967)* (arXiv:2610.11967) — its
+training/eval code implementation is in the [**CELL**](https://github.com/panagiotisq/CELL) repo. This
+repo is CELL's real-time ROS 1 deployment plus the drone-space dataset.
+
 🎥 **Video — [TU Graz Drone Space: dataset walkthrough + real-time live deployment](https://www.youtube.com/watch?v=Z9_15EQ4nI0)**
 
 ## Data & trained model (Google Drive)
