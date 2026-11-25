@@ -17,7 +17,21 @@ CLR1_RESULT_PORT="${CLR1_RESULT_PORT:-48811}"
 CLR1_GUESS_PORT="${CLR1_GUESS_PORT:-48812}"
 CLR1_EVENTS_PORT="${CLR1_EVENTS_PORT:-48813}"
 CLR1_RUN="$CLR1_ROOT/run"
-CLR1_EV_WS="${CLR1_EV_WS:-$HOME/workspaces/ros/prophesee_mocap_ws}"   # your own ROS1 driver workspace (mocap + Prophesee), if it has one
+# Your own ROS1 driver workspace overlay (mocap + Prophesee msgs), if you have one. Auto-detect
+# the first candidate that is actually built; override with CLR1_EV_WS=/path.
+if [[ -z "${CLR1_EV_WS:-}" ]]; then
+    for _ws in "$HOME/workspaces/ros/prophesee_mocap_ws" "$HOME/catkin_ws" "$HOME/ros_ws"; do
+        [[ -f "$_ws/devel/setup.bash" ]] && { CLR1_EV_WS="$_ws"; break; }
+    done
+    CLR1_EV_WS="${CLR1_EV_WS:-$HOME/workspaces/ros/prophesee_mocap_ws}"
+fi
+# Driver topics + optional mocap launcher (see launch/start_mocap.sh). Mocap stays vendor-agnostic:
+# an empty CLR1_MOCAP_LAUNCH means this repo never starts mocap itself -- it only reuses an
+# already-running one, or warns. Set CLR1_MOCAP_PKG/CLR1_MOCAP_LAUNCH to have start_all.sh start it.
+CLR1_MOCAP_TOPIC="${CLR1_MOCAP_TOPIC:-/mocap_node/evk4/pose}"
+CLR1_CAMERA_TOPIC="${CLR1_CAMERA_TOPIC:-/prophesee/camera/camera_info}"
+CLR1_MOCAP_PKG="${CLR1_MOCAP_PKG:-mocap_optitrack}"
+CLR1_MOCAP_LAUNCH="${CLR1_MOCAP_LAUNCH:-}"
 if [[ -z "${CLR1_CONDA_ENV:-}" ]]; then
     CLR1_CONDA_ENV="$HOME/anaconda3/envs/cell_live"
     for base in "$HOME/anaconda3" "$HOME/miniconda3" "$HOME/miniforge3"; do
@@ -85,4 +99,19 @@ clr1_require_master() {   # any master listening on 127.0.0.1:$CLR1_MASTER_PORT 
         echo "launch/start_master.sh (set CLR1_MASTER_PORT to match whichever master has mocap+events)." >&2
         exit 1
     fi
+}
+
+# clr1_ros_run CMD...: like clr1_ros_exec but in a subshell, so the CALLER keeps running
+# (clr1_ros_exec replaces the shell via exec). Used for the one-shot readiness queries below.
+clr1_ros_run() ( clr1_ros_exec "$@" )
+
+clr1_ros_has_node() {        # 0 if a node with exactly this name is registered on the master
+    clr1_ros_run rosnode list 2>/dev/null | grep -qx "$1"
+}
+clr1_ros_mocap_present() {   # 0 if any node whose name contains 'mocap' is registered
+    clr1_ros_run rosnode list 2>/dev/null | grep -qi mocap
+}
+clr1_ros_topic_live() {      # clr1_ros_topic_live TOPIC [SECS=3]: 0 if a message arrives in time
+    local topic="$1" secs="${2:-3}"
+    clr1_ros_run bash -c 'timeout "$0" rostopic echo -n 1 "$1" >/dev/null 2>&1' "$secs" "$topic"
 }

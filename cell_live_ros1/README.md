@@ -96,17 +96,34 @@ ln -sf correlation_package/correlation_cuda.cpython-310-*.so ../correlation_cuda
 
 ## Run
 
+`start_all.sh` brings up the whole stack in order — master → camera → mocap → bridge → RViz →
+CELL — checking each piece is really up before the next, and **reusing** anything already
+running on the target master (default port 11311). On any failure it rolls back whatever *this*
+run started (via `stop_all.sh`); pieces that were already running are left alone.
+
 ```bash
-# the external mocap + Prophesee driver stack must already be publishing on the ROS master this uses
-# (default: port 11311).
 cd cell_live_ros1
-launch/start_all.sh                      # bridge + RViz + CELL, in the background
-launch/start_all.sh -- --iters 16        # lighter model load if latency is too high
-launch/stop_all.sh
+launch/start_all.sh --mode B             # Mode B: self-track, mocap re-seed on loss (default)
+launch/start_all.sh --mode A             # Mode A: guess from live mocap every tick
+launch/start_all.sh --mode B -- --iters 16   # pass extra run_cell_live.py args after --
+launch/start_all.sh --no-drivers         # reuse already-running camera/mocap, start nothing new
+launch/stop_all.sh                       # stops only what this repo started, in reverse order
 ```
 
-Or step by step: `start_bridge.sh`, `start_rviz.sh`, `start_cell.sh` (own terminal each).
-Logs: `run/logs/*.log`.
+`--mode A/B` maps to CELL's `--guess-mode mocap/selftrack` (don't pass `--guess-mode` after `--`).
+
+**Drivers.** The EVK4 camera is started from this repo's own launch file
+(`start_camera.sh` → `prophesee_for_cell_live.launch`). **Mocap stays vendor-agnostic**: this
+repo ships no mocap launch, so `start_all.sh` only *reuses* a running mocap node (or warns and
+keeps going — CELL skips ticks until poses arrive). To have it start your mocap too, point
+`start_mocap.sh` at your driver (in `$CLR1_EV_WS`):
+
+```bash
+CLR1_MOCAP_PKG=mocap_optitrack CLR1_MOCAP_LAUNCH=evk4.launch launch/start_all.sh --mode A
+```
+
+Or step by step (own terminal each): `start_master.sh`, `start_camera.sh`, `start_mocap.sh`,
+`start_bridge.sh`, `start_rviz.sh`, `start_cell.sh`. Logs: `run/logs/*.log`.
 
 ## Event decoding: raw vs rospy
 
