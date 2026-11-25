@@ -4,6 +4,8 @@ Live **CELL** (map-relative event-camera localization) on a drone-space rig — 
 Prophesee EVK4 event camera, OptiTrack mocap — together with the TUGraz drone-space dataset
 and its generation tooling. The live deployment lives in `cell_live_ros1/`.
 
+🎥 **Video — [TU Graz Drone Space: dataset walkthrough + real-time live deployment](https://www.youtube.com/watch?v=Z9_15EQ4nI0)**
+
 ## Data & trained model (Google Drive)
 
 Want the drone-space data or the trained CELL model? The large files aren't in the repo —
